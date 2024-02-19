@@ -6,16 +6,20 @@ class GripperSystem {
     public: 
         GripperSystem();
         void motorSetEffort(int effort);
+        void motorSetEffort(int effort, bool clockwise);
         long motorGetPosition();
         void reset();
         void setup();
         double motorCalculateRPM(int ticks, int ticksPerRev);
         void motorMoveTo(int targetPosition);
+        void motorMoveToInDegrees(double degrees);
         void calculatePosition();
+        void openGripper();
+        void closeGripper();
+        void gripperServoRountine();
 
 
     private:
-        void setEffort(int effort, bool clockwise);
         static void isrA();
         static void isrB();
         const int tolerance = 52;
