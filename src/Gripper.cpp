@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Gripper.h>
 #include <Romi32U4.h>
-#include <Timer.h>
+#include "Timer.h"
 #include <servo32u4.h>
 
 
@@ -10,7 +10,7 @@ long newValue;
 long count = 0;
 unsigned time = 0;
 long encoderPosition = 0;
-const double p = 1.0;
+const double p = 2.0;
 const double ticksPerRevolution = 540;
 
 int servoPin = 5;
@@ -21,8 +21,8 @@ int servoJawUp = 1700;
 int printDelay = 500;
 int linearPotVoltageADC = 500;
 
-int jawOpenPotVoltageADC = 780;
-int jawClosedPotVoltageADC = 60;
+int jawOpenPotVoltageADC = 800;
+int jawClosedPotVoltageADC = 80;
 int linearPotVoltageCheck = 0;
 int linearPotVoltageDelta = 0;
 int i = 0;
@@ -31,7 +31,7 @@ boolean notPlate = false;
 
 
 Romi32U4ButtonB buttonB;
-Servo32U4 jawServo;
+Servo32U4Pin5 jawServo;
 Timer printTimer(printDelay);
 
 
@@ -51,8 +51,8 @@ void GripperSystem::setup()
     ICR1 = 400;
     OCR1C = 0;
 
-    attachInterrupt(digitalPinToInterrupt(ENCA), isrA, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENCB), isrB, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ENCB), isrA, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ENCA), isrB, CHANGE);
     reset();
 
     jawServo.attach();
@@ -134,21 +134,43 @@ double GripperSystem::motorCalculateRPM(int ticks, int ticksPerRev) {
 
 void GripperSystem::motorMoveTo(int targetPosition) {
     
-    if (targetPosition > 0) {
+    Serial.println(count);                                    
+
+    if(targetPosition > 0 && count > targetPosition) {
+
+        while(count > targetPosition) {
+            int speed = (count - targetPosition) * p;
+            if(speed < 50) {
+                speed = 75;
+            }
+            Serial.println(speed);
+            motorSetEffort(speed + tolerance);
+        }
+    }
+
+    else if (targetPosition > 0) {
         while(count < targetPosition) {
             int speed = (count - targetPosition) * p;
+            if(speed > -100) {
+                speed = -100;
+            }
             Serial.println(speed);
             motorSetEffort(speed - tolerance);
         }
     }
+    
     else {
 
         while(count > targetPosition) {
             int speed = (count - targetPosition) * p;
+            if(speed < 50) {
+                speed = 50;
+            }
             Serial.println(speed);
             motorSetEffort(speed + tolerance);
         }
-    }    
+    }
+    motorSetEffort(0, 0);    
 }
 
 void GripperSystem::motorMoveToInDegrees(double degrees) {
@@ -177,6 +199,11 @@ void GripperSystem::openGripper() {
     // Move Jaw Down
     jawServo.writeMicroseconds(servoJawDown);
 
+    linearPotVoltageADC = analogRead(linearPotPin);
+      if (printTimer.isExpired()){
+        Serial.print("linearPotVoltageADC:    ");
+        Serial.println(linearPotVoltageADC);
+      }
     while (linearPotVoltageADC < jawOpenPotVoltageADC)
     {
       linearPotVoltageADC = analogRead(linearPotPin);
@@ -215,15 +242,15 @@ void GripperSystem::closeGripper() {
             i++;
             c++;
         }
-        if (c >= 6 && linearPotVoltageDelta <= 20) {
-            c =  0;
-            jawServo.writeMicroseconds(servoStop);
-            Serial.println("Obstruction found; re-opening...");
-            delay(1000);
-            jawServo.writeMicroseconds(servoJawDown);
-            delay(4000);
-            break;
-        }
+        // if (c >= 6 && linearPotVoltageDelta <= 20) {
+        //     c =  0;
+        //     jawServo.writeMicroseconds(servoStop);
+        //     Serial.println("Obstruction found; re-opening...");
+        //     delay(1000);
+        //     jawServo.writeMicroseconds(servoJawDown);
+        //     delay(6000);
+        //     break;
+        // }
     }
     
     // Stop servo
@@ -240,7 +267,7 @@ void GripperSystem::gripperServoRountine() {
     Serial.print("Initial linearPotVoltageADC:   ");
     Serial.println(linearPotVoltageADC);
 
-    while(buttonB.isPressed()) {
+    //while(buttonB.isPressed()) {
 
         openGripper();
 
@@ -270,7 +297,7 @@ void GripperSystem::gripperServoRountine() {
         Serial.println(linearPotVoltageADC);
         delay(5000);
 
-    }
+    //}
 
     jawServo.writeMicroseconds(servoStop);
 
