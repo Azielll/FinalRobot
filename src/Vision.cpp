@@ -101,11 +101,7 @@ void VisionSystem::lineTrackDriving(Chassis chassis) {
     innerLeftLineTrackingValue = sensorValues[2];
     outerLeftLineTrackingValue = sensorValues[3];
 
-    //error = (leftLineTrackingValue - rightLineTrackingValue) * Kp;
     double error = ((outerLeftLineTrackingValue * -4) + (innerLeftLineTrackingValue * 0) + (innerRightLineTrackingValue * 0) + (outerRightLineTrackingValue * 4)) * Kp;
-    //double sumOfReadings = sensorValues[0] + sensorValues[1] + sensorValues[2] + sensorValues[3];
-
-    //error = error/sumOfReadings;
 
 
     Serial.print("error:  ");
@@ -120,6 +116,7 @@ void VisionSystem::lineTrackDriving(Chassis chassis) {
     Serial.println(rightSpeed);
     chassis.setMotorEfforts(leftSpeed, rightSpeed);
 }
+
 void VisionSystem::inPlaceLineTracking(Chassis chassis) {
     readLineTrackingSensor();
     outerRightLineTrackingValue = sensorValues[0] - 15;
@@ -127,11 +124,8 @@ void VisionSystem::inPlaceLineTracking(Chassis chassis) {
     innerLeftLineTrackingValue = sensorValues[2];
     outerLeftLineTrackingValue = sensorValues[3];
 
-    //error = (leftLineTrackingValue - rightLineTrackingValue) * Kp;
-    double error = ((outerLeftLineTrackingValue * -4) + (innerLeftLineTrackingValue * 1) + (innerRightLineTrackingValue * 1) + (outerRightLineTrackingValue * 4)) * Kp;
-    //double sumOfReadings = sensorValues[0] + sensorValues[1] + sensorValues[2] + sensorValues[3];
 
-    //error = error/sumOfReadings;
+    double error = ((outerLeftLineTrackingValue * -4) + (innerLeftLineTrackingValue * 1) + (innerRightLineTrackingValue * 1) + (outerRightLineTrackingValue * 4)) * Kp;
 
 
     Serial.print("error:  ");
@@ -155,6 +149,7 @@ void VisionSystem::ultrasonicLineTrackDriving(Chassis chassis, double targetDist
     chassis.setMotorEfforts(0, 0);
     Serial.println("Done");
 }
+
 void VisionSystem::intersectionLineTrackDriving(Chassis chassis) {
     outerRightLineTrackingValue = sensorValues[0] - 15;
     outerLeftLineTrackingValue = sensorValues[3];
@@ -167,10 +162,8 @@ void VisionSystem::intersectionLineTrackDriving(Chassis chassis) {
         Serial.println(outerLeftLineTrackingValue);
     }
     chassis.setMotorEfforts(0, 0);
-    //Serial.println("Finished");
-    Serial.println(outerRightLineTrackingValue);
-    //Serial.println(outerLeftLineTrackingValue);
 }
+
 void VisionSystem::ultrasonicDriving(Chassis chassis, double targetDistance) {
     while(readDistance() >= targetDistance) {
         chassis.setMotorEfforts(75, 75);
@@ -185,20 +178,12 @@ void VisionSystem::spinLineTracking(Chassis chassis) {
     innerRightLineTrackingValue = sensorValues[1];
     innerLeftLineTrackingValue = sensorValues[2];
 
-    //int i = 0;
-
     while (innerLeftLineTrackingValue < 450 && innerRightLineTrackingValue < 450) {
         chassis.setMotorEfforts(-60, 60);
         readLineTrackingSensor();
         innerRightLineTrackingValue = sensorValues[1];
         innerLeftLineTrackingValue = sensorValues[2];
         Serial.println("Not found");
-        // if(innerLeftLineTrackingValue > 500 && innerRightLineTrackingValue > 500) {
-        //     i++;
-        //     delay(500);
-        //     Serial.print("I:  ");
-        //     Serial.println(i);
-        // }
     }
     chassis.setMotorEfforts(0, 0);
     delay(500);
@@ -209,20 +194,12 @@ void VisionSystem::spinLineTracking2(Chassis chassis) {
     innerRightLineTrackingValue = sensorValues[1];
     innerLeftLineTrackingValue = sensorValues[2];
 
-    //int i = 0;
-
     while (innerLeftLineTrackingValue < 500 && innerRightLineTrackingValue < 500) {
         chassis.setMotorEfforts(65, -65);
         readLineTrackingSensor();
         innerRightLineTrackingValue = sensorValues[1];
         innerLeftLineTrackingValue = sensorValues[2];
         Serial.println("Not found");
-        // if(innerLeftLineTrackingValue > 500 && innerRightLineTrackingValue > 500) {
-        //     i++;
-        //     delay(500);
-        //     Serial.print("I:  ");
-        //     Serial.println(i);
-        // }
     }
     chassis.setMotorEfforts(0, 0);
     delay(500);
@@ -236,8 +213,6 @@ void VisionSystem::task3LineTracking(Chassis chassis) {
     innerLeftLineTrackingValue = sensorValues[2];
     outerLeftLineTrackingValue = sensorValues[3];
 
-    //int i = 0;
-
     while (outerRightLineTrackingValue < 500 && outerLeftLineTrackingValue < 500) {
         //lineTrackDriving(chassis);
         chassis.setMotorEfforts(100, 100);
@@ -248,12 +223,6 @@ void VisionSystem::task3LineTracking(Chassis chassis) {
         innerLeftLineTrackingValue = sensorValues[2];
         outerLeftLineTrackingValue = sensorValues[3];
         Serial.println("Not found");
-        // if(innerLeftLineTrackingValue > 500 && innerRightLineTrackingValue > 500) {
-        //     i++;
-        //     delay(500);
-        //     Serial.print("I:  ");
-        //     Serial.println(i);
-        // }
     }
     chassis.setMotorEfforts(0, 0);
     delay(500);

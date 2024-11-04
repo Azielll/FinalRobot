@@ -242,15 +242,6 @@ void GripperSystem::closeGripper() {
             i++;
             c++;
         }
-        // if (c >= 6 && linearPotVoltageDelta <= 20) {
-        //     c =  0;
-        //     jawServo.writeMicroseconds(servoStop);
-        //     Serial.println("Obstruction found; re-opening...");
-        //     delay(1000);
-        //     jawServo.writeMicroseconds(servoJawDown);
-        //     delay(6000);
-        //     break;
-        // }
     }
     
     // Stop servo
@@ -267,37 +258,33 @@ void GripperSystem::gripperServoRountine() {
     Serial.print("Initial linearPotVoltageADC:   ");
     Serial.println(linearPotVoltageADC);
 
-    //while(buttonB.isPressed()) {
+    openGripper();
 
-        openGripper();
+    // Stop servo
+    jawServo.writeMicroseconds(servoStop);
 
-        // Stop servo
-        jawServo.writeMicroseconds(servoStop);
+    linearPotVoltageADC = analogRead(linearPotPin);
+    Serial.print("Bottom linearPotVoltageADC Before Delay:    ");
+    Serial.println(linearPotVoltageADC);
+    delay(5000);
+    linearPotVoltageADC = analogRead(linearPotPin);
+    Serial.print("Bottom linearPotVoltageADC After Delay:     ");
+    Serial.println(linearPotVoltageADC);
+    delay(5000);
 
-        linearPotVoltageADC = analogRead(linearPotPin);
-        Serial.print("Bottom linearPotVoltageADC Before Delay:    ");
-        Serial.println(linearPotVoltageADC);
-        delay(5000);
-        linearPotVoltageADC = analogRead(linearPotPin);
-        Serial.print("Bottom linearPotVoltageADC After Delay:     ");
-        Serial.println(linearPotVoltageADC);
-        delay(5000);
+    closeGripper();
 
-        closeGripper();
+    // Stop servo
+    jawServo.writeMicroseconds(servoStop);
 
-        // Stop servo
-        jawServo.writeMicroseconds(servoStop);
-
-        linearPotVoltageADC = analogRead(linearPotPin);
-        Serial.print("Final linearPotVoltageADC Before Delay:      ");
-        Serial.println(linearPotVoltageADC);
-        delay(5000);
-        linearPotVoltageADC = analogRead(linearPotPin);
-        Serial.print("Final linearPotVoltageADC After Delay:      ");
-        Serial.println(linearPotVoltageADC);
-        delay(5000);
-
-    //}
+    linearPotVoltageADC = analogRead(linearPotPin);
+    Serial.print("Final linearPotVoltageADC Before Delay:      ");
+    Serial.println(linearPotVoltageADC);
+    delay(5000);
+    linearPotVoltageADC = analogRead(linearPotPin);
+    Serial.print("Final linearPotVoltageADC After Delay:      ");
+    Serial.println(linearPotVoltageADC);
+    delay(5000);
 
     jawServo.writeMicroseconds(servoStop);
 

@@ -21,8 +21,6 @@ class VisionSystem {
         bool onLineTest(Chassis chassis);
         bool onLineTest2(Chassis chassis);
         
-        
-
     private:
         
         int innerLeftLineTracker = 20;
